@@ -1,2 +1,2 @@
-# MyGridWrold
+# MyGridWorld
 Computer Science Homework
