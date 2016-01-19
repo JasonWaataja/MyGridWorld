@@ -4,8 +4,11 @@ import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.*;
 import java.awt.event.KeyListener;
 
+import javax.swing.JFrame;
+
 import info.gridworld.actor.Actor;
 import info.gridworld.grid.*;
+import info.gridworld.world.World;
 
 public class TronPlayer extends Actor implements KeyListener {
 	
@@ -20,6 +23,8 @@ public class TronPlayer extends Actor implements KeyListener {
 	 */
 	private boolean isAlive;
 	
+	private String playerName;
+	
 	/**
 	 * constructor that sets each of the key codes to the args
 	 * @param upKey
@@ -31,6 +36,7 @@ public class TronPlayer extends Actor implements KeyListener {
 		setKeys(upKey, downKey, leftKey, rightKey);
 		setDirection(Location.NORTH);
 		isAlive = true;
+		playerName = "Player";
 		
 	}
 	
@@ -85,13 +91,24 @@ public class TronPlayer extends Actor implements KeyListener {
 	public void turnLeft() {
 		setDirection((getDirection() + Location.HALF_LEFT) % Location.FULL_CIRCLE);
 	}
+	
+	public void processKeyCode(int keyCode) {
+		//System.out.println("processed key" + keyCode);
+		if (keyCode == upKey) {
+			setDirection(Location.NORTH);
+		} else if (keyCode == downKey) {
+			setDirection(Location.SOUTH);
+		} else if (keyCode == leftKey) {
+			setDirection(Location.WEST);
+		} else if (keyCode == rightKey) {
+			setDirection(Location.EAST);
+		}
+	}
 		
 	@Override
 	public void keyPressed(KeyEvent arg0) {
 		int keyCode = arg0.getKeyCode();
-		switch (keyCode) {
-		
-		}
+		processKeyCode(keyCode);
 	}
 
 	@Override
@@ -130,8 +147,8 @@ public class TronPlayer extends Actor implements KeyListener {
 		Location currentLocation = getLocation();
 		if (grid.isValid(nextLocation) && grid.get(nextLocation) == null) {
 			moveTo(nextLocation);
-			//WallActor wall = new WallActor(getDirection());
-			//wall.putSelfInGrid(grid, currentLocation);
+			WallActor wall = new WallActor(getDirection(), getColor());
+			wall.putSelfInGrid(grid, currentLocation);
 		} else {
 			destroy();
 		}
@@ -139,10 +156,26 @@ public class TronPlayer extends Actor implements KeyListener {
 		
 	public void destroy() {
 		this.isAlive = false;
-		this.removeSelfFromGrid();
+		//this.removeSelfFromGrid();
 	}
 	
 	public void act() {
 		move();
+	}
+	
+	public void setFrame(JFrame frame) {
+		frame.addKeyListener(this);
+	}
+	
+	public boolean isAlive() {
+		return this.isAlive;
+	}
+	
+	public String getName() {
+		return this.playerName;
+	}
+	
+	public void setName(String name) {
+		this.playerName = name;
 	}
 }
